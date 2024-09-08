@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Clicker App</title>
+</head>
+
+<body>
+    <h1>Clicker Game</h1>
+    <p>Click Count: <span id="clickCount">0</span></p>
+    <button id="clickButton">Click me!</button>
+
+
+    <script type="module">
+        // Import the necessary functions from Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+        // Your Firebase config object
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFqJsTUyTXr-UBbIFVnnfue5utcl8obeM",
+            authDomain: "averyniceclicker.firebaseapp.com",
+            projectId: "averyniceclicker",
+            storageBucket: "averyniceclicker.appspot.com",
+            messagingSenderId: "48962883308",
+            appId: "1:48962883308:web:66112e114dae1929259fc9",
+            measurementId: "G-FBH6VSWD15"
+        };
+
+        // Initialize Firebase app
+        const app = initializeApp(firebaseConfig);
+
+        // Initialize Firestore
+        const db = getFirestore(app);
+
+        // Reference to the Firestore document that will store the click count
+        const docRef = doc(db, 'clicker', 'clickCountDoc');
+
+        // Get the current click count from Firestore
+        const clickCountDisplay = document.getElementById('clickCount');
+        async function fetchClickCount() {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                clickCountDisplay.innerText = docSnap.data().count;
+            } else {
+                // Set initial count if no document exists
+                await setDoc(docRef, { count: 0 });
+                clickCountDisplay.innerText = 0;
+            }
+        }
+
+        fetchClickCount();
+
+        // Function to update the click count
+        async function updateClickCount(count) {
+            clickCountDisplay.innerText = count;
+            await setDoc(docRef, { count: count });
+        }
+
+        // Button click event listener
+        document.getElementById('clickButton').addEventListener('click', () => {
+            let currentCount = parseInt(clickCountDisplay.innerText);
+            currentCount += 1;
+            updateClickCount(currentCount);
+        });
+
+    </script>
+</body>
+
+</html>
