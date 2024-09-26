@@ -13,11 +13,10 @@
     <p>Click Count: <span id="clickCount">0</span></p>
     <button id="clickButton">Click me!</button>
 
-
     <script type="module">
         // Import the necessary functions from Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
         // Your Firebase config object
         const firebaseConfig = {
@@ -52,11 +51,20 @@
             }
         }
 
+        // Function to set up real-time listener for click count
+        function listenForClickCount() {
+            onSnapshot(docRef, (doc) => {
+                if (doc.exists()) {
+                    clickCountDisplay.innerText = doc.data().count;
+                }
+            });
+        }
+
         fetchClickCount();
+        listenForClickCount();
 
         // Function to update the click count
         async function updateClickCount(count) {
-            clickCountDisplay.innerText = count;
             await setDoc(docRef, { count: count });
         }
 
